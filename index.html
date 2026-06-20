@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HemSO – Rent, PG & Land Listings</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Hem<span>SO</span></div>
+  <div class="nav-links">
+    <a href="#" onclick="filterByType('all')">All Listings</a>
+    <a href="#" onclick="filterByType('rent')">Rent</a>
+    <a href="#" onclick="filterByType('pg')">PG</a>
+    <a href="#" onclick="filterByType('land')">Land</a>
+  </div>
+  <button class="btn-post" onclick="openPostModal()">+ Post Listing</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Find Your Perfect Place</h1>
+  <p>Houses for rent, PG accommodations, and land for sale — all in one place.</p>
+  <div class="tab-bar">
+    <div class="tab active" onclick="setHeroTab(this,'all')">All</div>
+    <div class="tab" onclick="setHeroTab(this,'rent')">Rent House</div>
+    <div class="tab" onclick="setHeroTab(this,'pg')">PG / Hostel</div>
+    <div class="tab" onclick="setHeroTab(this,'land')">Land / Plot</div>
+  </div>
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="Search by location, city…" oninput="applyFilters()">
+    <select id="bedroomSearch" onchange="applyFilters()">
+      <option value="">Any BHK</option>
+      <option>Half-BHK</option>
+      <option>1 BHK</option>
+      <option>2 BHK</option>
+      <option>3 BHK</option>
+    </select>
+    <button onclick="applyFilters()">Search</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- FILTERS -->
+  <aside class="filters">
+    <h3>🔧 Filters</h3>
+    <div class="filter-group">
+      <label>Type</label>
+      <select id="typeFilter" onchange="applyFilters()">
+        <option value="all">All Types</option>
+        <option value="rent">Rent House</option>
+        <option value="pg">PG / Hostel</option>
+        <option value="land">Land / Plot</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>City</label>
+      <select id="cityFilter" onchange="applyFilters()">
+        <option value="">All Cities</option>
+          <option>Amri</option>
+          <option>Bakulia</option>
+          <option>Bokajan</option>
+          <option>Center</option>
+          <option>Diphu</option>
+          <option>Dalamara</option>
+          <option>Den Arong</option>
+          <option>Dokmoka</option>
+          <option>Disobai</option>
+          <option>Dongka</option>
+          <option>Dongkamokam</option>
+          <option>Hamren</option>
+          <option>Howraghat</option>
+          <option>Kheroni</option>
+          <option>Manja</option>
+          <option>Phuloni</option>
+          <option>Silonijan</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Max Price (₹)</label>
+      <input type="range" id="priceRange" min="0" max="50000" step="1000" value="50000" oninput="updateRange(this)">
+      <div class="range-val" id="rangeVal">Up to ₹50,000</div>
+    </div>
+    <div class="filter-group">
+      <label>Furnished</label>
+      <div class="check-group">
+        <label><input type="checkbox" value="furnished" onchange="applyFilters()"> Furnished</label>
+        <label><input type="checkbox" value="semi" onchange="applyFilters()"> Semi-Furnished</label>
+        <label><input type="checkbox" value="unfurnished" onchange="applyFilters()"> Unfurnished</label>
+      </div>
+    </div>
+    <button class="btn-clear" onclick="clearFilters()">Clear Filters</button>
+  </aside>
+
+  <!-- LISTINGS -->
+  <section class="listings">
+    <div class="list-header">
+      <h2 id="listCount">All Listings</h2>
+      <select onchange="sortListings(this.value)">
+        <option value="newest">Newest First</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+      </select>
+    </div>
+    <div class="grid" id="listingsGrid"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <div style="font-size:48px">🔍</div>
+      <p>No listings match your search. Try adjusting filters.</p>
+    </div>
+  </section>
+</div>
+
+<!-- POST MODAL -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Post Your Listing</h2>
+      <button class="modal-close" onclick="closeModal('postModal')">×</button>
+    </div>
+    <div class="form-group">
+      <label>Listing Type</label>
+      <div class="type-selector">
+        <div class="type-btn active" onclick="selectType(this,'rent')">🏠 Rent House</div>
+        <div class="type-btn" onclick="selectType(this,'pg')">🛏 PG / Hostel</div>
+        <div class="type-btn" onclick="selectType(this,'land')">🌿 Land / Plot</div>
+      </div>
+    </div>
+    <input type="hidden" id="postType" value="rent">
+    <div class="form-group">
+      <label>Title / Property Name</label>
+      <input id="postTitle" type="text" placeholder="e.g. 2 BHK near City Centre">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>City</label>
+        <select id="postCity">
+          <option>Amri</option>
+          <option>Bakulia</option>
+          <option>Bokajan</option>
+          <option>Center</option>
+          <option>Diphu</option>
+          <option>Dalamara</option>
+          <option>Den Arong</option>
+          <option>Dokmoka</option>
+          <option>Disobai</option>
+          <option>Dongka</option>
+          <option>Dongkamokam</option>
+          <option>Hamren</option>
+          <option>Howraghat</option>
+          <option>Kheroni</option>
+          <option>Manja</option>
+          <option>Phuloni</option>
+          <option>Silonijan</option>
+         
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Area / Locality</label>
+        <input id="postLocality" type="text" placeholder="e.g. Paltan Bazaar">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price (₹)</label>
+        <input id="postPrice" type="number" placeholder="Monthly rent or sale price">
+      </div>
+      <div class="form-group" id="bhkGroup">
+        <label>BHK / Rooms</label>
+        <select id="postBHK">
+          <option>1 BHK</option>
+          <option>2 BHK</option>
+          <option>3 BHK</option>
+          <option>4+ BHK</option>
+          <option>Single Room</option>
+          <option>Studio</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" id="furnishGroup">
+      <label>Furnishing</label>
+      <select id="postFurnish">
+        <option value="furnished">Furnished</option>
+        <option value="semi">Semi-Furnished</option>
+        <option value="unfurnished">Unfurnished</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Area (sq ft)</label>
+      <input id="postArea" type="number" placeholder="e.g. 850">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="postDesc" placeholder="Describe the property, amenities, nearby landmarks…"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input id="postName" type="text" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input id="postPhone" type="tel" placeholder="10-digit number">
+      </div>
+    </div>
+    <button class="btn-submit" onclick="submitListing()">Post Listing</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="dm-tag-title"></h2>
+      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div class="detail-img" id="dm-emoji"></div>
+    <div class="detail-price" id="dm-price"></div>
+    <div class="detail-title" id="dm-title"></div>
+    <div class="detail-loc" id="dm-loc">📍 </div>
+    <div class="detail-grid" id="dm-grid"></div>
+    <div class="detail-desc" id="dm-desc"></div>
+    <div class="contact-box">
+      <div>
+        <div class="contact-name" id="dm-name"></div>
+        <div class="contact-phone" id="dm-phone"></div>
+      </div>
+      <button class="btn-call" id="dm-call">📞 Call Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Listing posted successfully!</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
